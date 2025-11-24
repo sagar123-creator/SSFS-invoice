@@ -1,0 +1,1471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Sandhya Sea Food Supplier - Invoice</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --border-color: #000;
+      --font-main: "Segoe UI", Arial, sans-serif;
+      --font-size-small: 11px;
+      --font-size-normal: 12px;
+      --primary: #0b66c3;
+      --muted: #6b7280;
+      --card-bg: #ffffff;
+      --surface: #f7fbff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', var(--font-main);
+      background: linear-gradient(180deg, #f5f8fb 0%, #eef6ff 100%);
+      color: #0f1724;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .page {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 10px auto;
+      padding: 12px 14px;
+      background: #fff;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+      font-size: var(--font-size-normal);
+      border: 1px solid var(--border-color);
+    }
+
+    .controls {
+      width: 210mm;
+      margin: 10px auto 0;
+      text-align: right;
+    }
+
+    .controls button {
+      padding: 6px 14px;
+      margin-left: 4px;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background: #fafafa;
+    }
+
+    h1, h2, h3, h4 {
+      margin: 0;
+      padding: 0;
+    }
+
+    .header-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .header-top {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+      padding: 2px 0; /* slightly reduce vertical space in header */
+    }
+
+    .small-seal {
+      width: 72px;
+      height: 72px;
+      position: relative;
+    }
+
+    .small-seal img {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 96px;
+      height: 96px;
+      object-fit: contain;
+      display: block;
+      transform: translate(-6px, -6px);
+    }
+    .header-top .small-seal {
+      justify-self: start;
+      overflow: visible;
+    }
+
+    .header-top .center-logo,
+    .header-top .center-column,
+    .header-top .invoice-label {
+      justify-self: center;
+    }
+
+    .header-top .owner-info {
+      justify-self: end;
+    }
+
+    .invoice-label {
+      font-weight: 900;
+      text-align: center;
+      margin: 0;
+      font-size: 16px;
+      text-transform: uppercase;
+      display: inline-block;
+      padding: 0 6px 4px 6px;
+      border-bottom: 2px solid var(--border-color);
+      letter-spacing: 1px;
+      justify-self: center;
+    }
+
+    .logo-box {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-circle {
+      width: 68px;
+      height: 68px;
+      border-radius: 50%;
+      border: 1px solid #444;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 9px;
+      text-align: center;
+    }
+
+    /* Customers list card styles (non-invoice UI improvements) */
+    #customersPanel .customer-card {
+      background: #fff;
+      border: 1px solid #e6eef7;
+      border-radius: 8px;
+      padding: 10px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+    #customerList { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:12px; }
+    #customerList .customer-card { display:flex; flex-direction:column; gap:6px; transition:transform .12s ease, box-shadow .12s ease; }
+    #customerList .customer-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(13,38,77,0.06); }
+    #customerList .customer-card button { padding:6px 8px; border-radius:6px; border:1px solid #d7dde6; background:#fbfdff; cursor:pointer; }
+    .customer-card-row { display:flex; gap:10px; align-items:flex-start; }
+    .customer-avatar { width:52px; height:52px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; color:#fff; background:linear-gradient(180deg,#0b66c3,#075399); box-shadow:0 6px 18px rgba(11,102,195,0.08); flex-shrink:0; }
+    .customer-meta { flex:1; min-width:0; }
+    .customer-meta .name { font-weight:700; font-size:14px; color:#0f1724; }
+    .customer-meta .addr { color:var(--muted); font-size:13px; margin-top:6px; white-space:break-spaces; overflow:hidden; text-overflow:ellipsis; max-height:3.6em; }
+    #customerList .customer-card button:hover { box-shadow: inset 0 -2px 0 rgba(0,0,0,0.03); }
+
+    /* refined customers panel header */
+    #customersPanel > div:first-child { background: transparent; }
+    #customersPanel .search-bar { display:flex; gap:8px; align-items:center; padding:8px 0; }
+    #customerSearch { border:1px solid #dbeaf7; background:#fbfdff; padding:10px 12px; border-radius:10px; box-shadow:0 4px 14px rgba(11,102,195,0.06); min-width:180px; }
+    #addCustomerBtnInline { background:var(--primary); color:#fff; border:none; padding:10px 14px; border-radius:10px; box-shadow:0 6px 18px rgba(11,102,195,0.12); }
+    #customersView h2 { font-size:20px; margin:16px 14px; color:var(--primary); letter-spacing:0.4px; }
+    #customersPanel .saved-header { display:flex; justify-content:space-between; align-items:center; gap:12px; }
+
+    /* modal-style add/edit customer form (non-print area) */
+    .overlay { position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.35); display:none; align-items:center; justify-content:center; z-index:9999; }
+    #addCustomerForm.modal { width:420px; max-width:94%; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.2); padding:18px; position:relative; }
+    #addCustomerForm .form-title { font-weight:800; font-size:16px; margin-bottom:8px; }
+    #addCustomerForm .close-btn { position:absolute; right:10px; top:8px; border:none; background:transparent; font-size:22px; cursor:pointer; color:#666; }
+
+    /* auth overlay */
+    .auth-overlay { position:fixed; left:0; top:0; right:0; bottom:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:10000; }
+    .auth-box { width:420px; max-width:94%; background:#fff; padding:18px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.25); }
+    .auth-box h3 { margin:0 0 8px 0; font-size:18px; }
+
+    /* action buttons */
+    .action-btn { display:inline-flex; align-items:center; gap:6px; padding:6px 8px; border-radius:6px; border:1px solid #e1e8f0; background:#fff; cursor:pointer; font-size:13px; }
+    .action-btn svg { width:14px; height:14px; display:block; }
+    .action-btn.positive { background:#eff9ff; border-color:#cce9ff; }
+    .action-btn.warn { background:#fff7f7; border-color:#ffdede; }
+
+    /* customer invoices list styling */
+    #customerInvoicesContainer { margin:8px 14px; }
+    #customerInvoicesContainer .invoice-card { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:12px; background:var(--card-bg); border-radius:10px; border:1px solid #eef4fb; margin-bottom:10px; box-shadow:0 6px 18px rgba(11,102,195,0.04); }
+    .empty-state { text-align:center; padding:28px; color:var(--muted); }
+    .empty-illustration { width:120px; height:120px; margin:0 auto 12px auto; opacity:0.95; }
+    #customerInvoicesContainer .invoice-card .meta { font-weight:700; }
+    #customerInvoicesContainer .invoice-card .meta small { display:block; font-weight:400; color:#444; margin-top:4px; }
+
+    /* utility buttons */
+    .btn { padding:8px 12px; border-radius:8px; border: none; cursor: pointer; }
+    .btn-primary { background:var(--primary); color:#fff; box-shadow:0 8px 24px rgba(11,102,195,0.12); }
+    .muted { color:var(--muted); }
+    .controls .btn { margin-left:6px; padding:8px 12px; border-radius:8px; border:1px solid rgba(15,23,36,0.06); background:#fff; box-shadow:0 6px 18px rgba(11,102,195,0.04); transition:transform .12s ease, box-shadow .12s ease; }
+    .controls .btn-primary { background:var(--primary); color:#fff; border:none; box-shadow:0 8px 24px rgba(11,102,195,0.18); }
+    .controls .btn:hover { transform:translateY(-3px); }
+    .controls .btn:active { transform:translateY(-1px) scale(.997); }
+
+    .company-title {
+      text-align: left;
+    }
+
+    .company-title h1 {
+      font-size: 18px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+
+    .company-title h2 {
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .invoice-label {
+      font-weight: 700;
+      text-align: center;
+      
+      
+      margin-bottom: 6px;
+      font-size: 15px;
+      text-transform: uppercase;
+    }
+
+    .center-logo {
+      display: flex;
+      justify-content: center;
+      align-self: center;
+      margin: 2px 0 6px 0; /* reduce vertical margin to shrink header area */
+    }
+
+    .center-logo img {
+      max-width: 380px;
+      max-height: 120px;
+      width: auto;
+      height: auto;
+      display: inline-block;
+    }
+
+    /* emphasize the address band like sample */
+    .top-band {
+      margin-top: 8px;
+      border-top: 2px solid var(--border-color);
+      border-bottom: 2px solid var(--border-color);
+      padding: 6px 0;
+      font-size: 13px;
+      text-align: center;
+      font-weight: 700;
+      background: #fff;
+    }
+
+    /* stronger table borders like the sample */
+    table, th, td {
+      border: 1px solid var(--border-color);
+    }
+
+    /* allow the items area to visually expand */
+    #itemsBody tr td {
+      padding: 8px 6px;
+    }
+
+    /* make footer boxes consistent (defined later with msme-box for layout) */
+    .owner-info {
+      text-align: right;
+      font-size: var(--font-size-small);
+    }
+
+    .top-band {
+      margin-top: 6px;
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      padding: 4px 0;
+      font-size: var(--font-size-small);
+      text-align: center;
+    }
+
+    .msme-fssai {
+      margin-top: 4px;
+      font-size: 12px;
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      align-items: center;
+    }
+
+    .fssai-img {
+      height: 18px;
+      vertical-align: middle;
+      margin-right: 6px;
+      display: inline-block;
+    }
+
+    .udyam {
+      color: #0b66c3;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .header-top .owner-info {
+      text-align: right;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .info-grid {
+      margin-top: 8px;
+      border: 1px solid var(--border-color);
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      font-size: var(--font-size-small);
+    }
+
+    .info-cell {
+      padding: 6px 8px;
+      border-right: 1px solid var(--border-color);
+    }
+
+    .info-cell:last-child {
+      border-right: none;
+    }
+
+    .label {
+      font-weight: 600;
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    textarea, input[type="text"],
+    input[type="date"] {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid #aaa;
+      font-family: var(--font-main);
+      font-size: var(--font-size-normal);
+      outline: none;
+      padding: 2px;
+    }
+
+    textarea {
+      min-height: 70px; /* allow multiple lines by default */
+      resize: vertical; /* user can adjust height if needed */
+    }
+
+    /* invoice metadata small table: remove inner borders around fields like INVOICE NO */
+    .info-cell table,
+    .info-cell table th,
+    .info-cell table td {
+      border: none !important;
+      border-collapse: collapse;
+      padding: 2px 0;
+      background: transparent !important;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: var(--font-size-small);
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 4px 5px;
+      text-align: left;
+    }
+
+    th {
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .col-sr {
+      width: 6%;
+      text-align: center;
+    }
+
+    .col-particular {
+      width: 44%;
+    }
+
+    .col-qty,
+    .col-rate,
+    .col-amount {
+      width: 16%;
+      text-align: right;
+    }
+
+    .col-qty input,
+    .col-rate input,
+    .col-amount input {
+      text-align: right;
+    }
+
+    .total-row td {
+      font-weight: 600;
+    }
+
+    .no-border {
+      border: none !important;
+    }
+
+    .amount-input {
+      background: #fdfdfd;
+    }
+
+    /* Footer layout: top row (MSME/FSSAI left, Notes right) */
+    .footer-top {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0; /* removed space between top footer boxes */
+      margin-top: 8px;
+      font-size: var(--font-size-small);
+      align-items: stretch;
+    }
+
+    .msme-box, .notes {
+      border: 1px solid var(--border-color);
+      padding: 8px 10px;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .notes ol { margin: 6px 0 0 16px; }
+
+    /* bank details table: remove any inner borders (force override) */
+    table.bank-details-table,
+    .bank-details-table,
+    .bank-details table.bank-details-table {
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+      margin: 0;
+    }
+    /* Strong override: remove borders from the bank details table element and its cells */
+    .bank-details .bank-details-table,
+    .bank-details table.bank-details-table,
+    .bank-details-table {
+      border: none !important;
+      outline: none !important;
+      box-shadow: none !important;
+      border-collapse: collapse;
+      border-spacing: 0;
+      width: 100%;
+      margin: 0;
+      background: transparent !important;
+    }
+
+    .bank-details .bank-details-table tr,
+    .bank-details .bank-details-table th,
+    .bank-details .bank-details-table td,
+    .bank-details-table tr,
+    .bank-details-table th,
+    .bank-details-table td {
+      border: none !important;
+      box-shadow: none !important;
+      outline: none !important;
+      padding: 2px 0;
+      text-align: left;
+      background: transparent !important;
+    }
+
+    /* Footer bottom: bank details (left) and two signature boxes on right */
+    .footer-bottom {
+      margin-top: 0; /* remove vertical gap between top and bottom footer rows */
+      display: grid;
+      /* make bank-details column wider so bank info has more space */
+      grid-template-columns: 1.6fr 0.9fr 0.9fr;
+      gap: 0; /* removed space between bottom footer boxes */
+      font-size: var(--font-size-small);
+      align-items: stretch;
+    }
+
+    .bank-details {
+      border: 1px solid var(--border-color); /* outer bank-details box border kept */
+      padding: 10px 12px;
+      background: #fff;
+    }
+
+    .signature-box {
+      border: 1px solid var(--border-color);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 130px;
+      background: #fff;
+    }
+
+    .signature-box .signature-image { display:block; max-width:120px; max-height:80px; margin:6px auto; }
+
+    /* ensure msme, notes and bank boxes match signature box height */
+    .msme-box, .notes, .bank-details { min-height: 130px; }
+
+    .signature-label {
+      text-align: center;
+      font-size: 10px;
+    }
+
+    .total-words {
+      margin-top: 6px;
+      font-size: var(--font-size-small);
+    }
+
+    .total-words span.label {
+      display: inline-block;
+      min-width: 140px;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+      }
+      .page {
+        margin: 0;
+        box-shadow: none;
+        border: 1px solid var(--border-color);
+      }
+      .controls {
+        display: none;
+      }
+      /* hide app chrome when printing — show only the invoice `.page` */
+      header, #customersView, #customersPanel, #customerList, .empty-state, .overlay, .auth-overlay, #openAllCustomers, #logoutBtn { display: none !important; }
+      input, textarea {
+        border: none !important;
+      }
+      /* A4 print optimizations to fit everything on one page */
+      @page { size: A4 portrait; margin: 8mm; }
+      html, body { height: 297mm; }
+      .page {
+        width: 190mm; /* slightly reduce printable width */
+        min-height: 277mm;
+        padding: 8px 10px;
+        font-size: 11px; /* slightly smaller for print */
+      }
+      /* reduce header/logo footprint */
+      .center-logo img { max-height: 80px; max-width: 320px; }
+      .invoice-label { font-size: 14px; padding-bottom: 2px; }
+      .header-top { gap: 6px; padding: 0 0 2px 0; }
+      /* tighten table spacing */
+      table { font-size: 10.5px; }
+      th, td { padding: 3px 4px; }
+      textarea { min-height: 40px; }
+      /* avoid page breaks inside the main invoice container */
+      .page, .header-top, #itemsTable, .footer-top, .footer-bottom { page-break-inside: avoid; }
+      /* reduce footer box min-height to fit */
+      .signature-box, .msme-box, .notes, .bank-details { min-height: 90px; }
+    }
+  </style>
+</head>
+<body>
+  <header style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 20px; background:transparent;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <img src="image/sandhya.png" alt="logo" style="height:44px; width:auto; border-radius:6px; box-shadow:0 6px 18px rgba(11,102,195,0.06);"/>
+      <div>
+        <div style="font-weight:800; font-size:18px; color:var(--primary);">Sandhya Sea Food Supplier</div>
+        <div style="font-size:12px; color:var(--muted);">Invoices & Customers</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:8px; align-items:center;">
+      <button id="openAllCustomers" class="btn" onclick="document.getElementById('customersView').scrollIntoView();">Customers</button>
+      <button id="logoutBtn" class="btn" style="display:none; margin-left:10px;">Logout</button>
+    </div>
+  </header>
+
+  <!-- Authentication overlay (login / initial setup) -->
+  <div class="auth-overlay" id="authOverlay" style="display:none;">
+    <div class="auth-box" id="authBox">
+      <h3 id="authTitle">Sign in</h3>
+      <div id="setupArea" style="display:none;">
+        <label style="display:block; margin-top:8px;">Create admin password</label>
+        <input type="password" id="setupPass" style="width:100%; padding:8px; margin-top:6px;" />
+        <label style="display:block; margin-top:8px;">Confirm password</label>
+        <input type="password" id="setupPassConfirm" style="width:100%; padding:8px; margin-top:6px;" />
+        <div style="text-align:right; margin-top:10px;"><button id="setPassBtn" class="btn btn-primary">Set Password</button></div>
+      </div>
+      <div id="loginArea" style="display:none;">
+        <label style="display:block; margin-top:6px;">Password</label>
+        <input type="password" id="loginPass" style="width:100%; padding:8px; margin-top:6px;" />
+        <div style="text-align:right; margin-top:10px;"><button id="loginBtn" class="btn btn-primary">Sign In</button></div>
+      </div>
+      <div style="margin-top:8px; color:var(--muted); font-size:12px;">This app is locally protected — for real security run behind a server.</div>
+    </div>
+  </div>
+  <!-- Customers view (landing page) -->
+  <div id="customersView">
+    <h2 style="margin:12px 14px;">Customers</h2>
+    <div id="customersPanel" style="margin:0 14px 12px 14px; display:flex; flex-direction:column; gap:12px;">
+      <div style="flex:1 1 auto; display:flex; flex-direction:column;">
+        <div class="saved-header">
+          <div style="font-weight:700; margin-bottom:6px;">Saved Customers</div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <input id="customerSearch" placeholder="Search customers by name or address" style="padding:8px 10px; border-radius:8px; border:1px solid #e3f0ff;" />
+            <button id="addCustomerBtnInline" class="btn btn-primary">+ Add</button>
+          </div>
+        </div>
+        <div id="customerList" style="border:1px solid var(--border-color); background:#fff; padding:12px; min-height:60vh; overflow:auto;"></div>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="overlay" id="customerFormOverlay">
+          <form id="addCustomerForm" class="modal" style="display:none; border:1px solid var(--border-color); background:#fff;">
+            <button type="button" class="close-btn" id="closeAddCustomerForm">×</button>
+            <div class="form-title">Add New Customer</div>
+          <label style="display:block; font-size:13px; margin-bottom:4px;">Customer name</label>
+          <input type="text" id="newCustomerName" style="width:100%; padding:6px; box-sizing:border-box;" required />
+          <label style="display:block; font-size:13px; margin:8px 0 4px;">Shipping address</label>
+          <textarea id="newCustomerAddress" rows="4" style="width:100%; padding:6px; box-sizing:border-box;"></textarea>
+          <div style="margin-top:8px; text-align:right;"><button id="saveCustomerBtn" type="button">Save Customer</button></div>
+          </form>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="addCustomerBtn" type="button">Add Customer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Invoice app (hidden until editing/creating an invoice) -->
+  <div id="invoiceApp" style="display:none;">
+    <div class="controls">
+    <button id="backToInvoicesBtn" type="button" class="btn">Back</button>
+    <button id="addRowBtn" type="button" class="btn">Add Row</button>
+    <button id="deleteRowBtn" type="button" class="btn">Delete Row</button>
+    <button id="printBtn" class="btn" type="button">Print / Save as PDF</button>
+  </div>
+
+  <div class="page">
+    <div class="header-top">
+      <div class="small-seal">
+        <img src="image/logo1.png" alt="seal" />
+      </div>
+
+      <div class="invoice-label">INVOICE</div>
+
+      <div class="owner-info">
+        <div><strong>Ramesh Rathod :</strong> 9820954719<br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;9819486341</div>
+      </div>
+    </div>
+
+    <div class="center-logo">
+      <img src="image/sandhya.png" alt="Sandhiya Sea Food Supplier" />
+    </div>
+
+    <div class="msme-fssai">
+      <div class="fssai-block">
+        <!-- place your FSSAI image at image/fssai.png when ready -->
+        <img src="image/fssai.png" alt="FSSAI" class="fssai-img" />
+        <strong>11524001000123</strong>
+      </div>
+      <div><span class="udyam">UDYAM-MH-19-0276267</span></div>
+    </div>
+
+    <div class="top-band">
+      <span style="font-weight:800;">
+        &#128205; 1773 BPT Gowdown Near Police Station Sassoon Dock Colaba Mumbai -400005
+      </span>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-cell">
+        <span class="label">CUSTOMER NAME</span>
+        <input type="text" id="customerName" placeholder="Customer name" />
+        <span class="label" style="margin-top:6px;">SHIPPING ADDRESS</span>
+          <textarea id="shippingAddress" placeholder="Address" rows="4"></textarea>
+      </div>
+      <div class="info-cell">
+        <table style="border-collapse: collapse; width:100%; font-size:10px;">
+          <tr>
+            <td class="label">INVOICE NO :</td>
+            <td><input type="text" id="invoiceNo" value="INV0001" /></td>
+          </tr>
+          <tr>
+            <td class="label">BILL CREATED ON :</td>
+            <td><input type="date" id="billDate" /></td>
+          </tr>
+          <tr>
+            <td class="label">From Date :</td>
+            <td><input type="date" id="fromDate" /></td>
+          </tr>
+          <tr>
+            <td class="label">To Date :</td>
+            <td><input type="date" id="toDate" /></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <table id="itemsTable">
+      <thead>
+        <tr>
+          <th class="col-sr">Sr No.</th>
+          <th class="col-particular">Particulars</th>
+          <th class="col-qty">Quantity (Kg)</th>
+          <th class="col-rate">Rate</th>
+          <th class="col-amount">Amount</th>
+        </tr>
+      </thead>
+      <tbody id="itemsBody">
+        <!-- Rows will be added by JS -->
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td class="no-border" colspan="4" style="text-align:right;">Total</td>
+          <td style="text-align:right;">
+            <span id="totalAmountDisplay">0.00</span>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="total-words">
+      <span class="label">Invoice Total (In words) :</span>
+      <span id="totalInWords">Zero Only.</span>
+    </div>
+
+    <div class="footer-top">
+      <div class="msme-box">
+        <div><strong>MSME NO: </strong><span class="udyam">UDYAM-MH-19-0276267</span></div>
+        <div style="margin-top:8px;"><strong>FSSAI: </strong><span>11524001000123</span></div>
+      </div>
+
+      <div class="notes">
+        <strong>Notes :</strong>
+        <ol style="margin:6px 0 0 16px; padding:0;">
+          <li>Please check the seafood at the time of delivery. No complaints will be accepted after delivery.</li>
+          <li>Goods once sold will not be taken back.</li>
+          <li>All Cheques/Drafts payable in the name of SANDHYA SEA FOOD SUPPLIER.</li>
+          <li>Subject to Mumbai Jurisdiction only.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="bank-details">
+        <strong>Bank details for NEFT/RTGS:</strong>
+        <table class="bank-details-table" style="margin-top:6px; width:100%;">
+          <tr>
+            <td style="width:160px;">Beneficiary Name :</td>
+            <td style="font-weight:700;">SANDHYA SEA FOOD SUPPLIER</td>
+          </tr>
+          <tr>
+            <td>Bank Name :</td>
+            <td style="font-weight:700;">Union Bank Of India</td>
+          </tr>
+          <tr>
+            <td>Branch Name :</td>
+            <td style="font-weight:700;">Mumbai Colaba</td>
+          </tr>
+          <tr>
+            <td>Bank A/c Number :</td>
+            <td style="font-weight:700;">510351000915091</td>
+          </tr>
+          <tr>
+            <td>Bank IFSC Code :</td>
+            <td style="font-weight:700;">UBIN0901687</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="signature-box" style="text-align:left;">
+        <div style="font-weight:700;">For Customer</div>
+        <div class="signature-label">Reciver's Signature</div>
+      </div>
+
+      <div class="signature-box" style="text-align:center;">
+        <div style="font-weight:700;">For Sandhya Sea Food Supplier</div>
+        <img src="image/sign.png" alt="signature" class="signature-image" />
+        <div class="signature-label">Authorised Signatory</div>
+      </div>
+    </div>
+  </div>
+
+  </div> <!-- /#invoiceApp -->
+
+  <script>
+    const itemsBody = document.getElementById("itemsBody");
+    const totalAmountDisplay = document.getElementById("totalAmountDisplay");
+    const totalInWords = document.getElementById("totalInWords");
+    // currently editing invoice id (null when creating new)
+    let currentEditingInvoiceId = null;
+
+    // --- Simple client-side auth (local-only) ---
+    async function hashString(s){
+      const enc = new TextEncoder();
+      const data = enc.encode(s);
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+    function isPasswordSet(){ return !!localStorage.getItem('adminHash'); }
+    async function setAdminPassword(pass){ const h = await hashString(pass); localStorage.setItem('adminHash', h); }
+    async function checkPassword(pass){ const h = await hashString(pass); return h === localStorage.getItem('adminHash'); }
+    function isLoggedIn(){ return sessionStorage.getItem('loggedIn') === 'true'; }
+    function markLoggedIn(){ sessionStorage.setItem('loggedIn','true'); document.getElementById('logoutBtn').style.display='inline-block'; }
+    function clearLogin(){ sessionStorage.removeItem('loggedIn'); document.getElementById('logoutBtn').style.display='none'; }
+
+    function showAuthOverlay(showSetup){
+      const ov = document.getElementById('authOverlay'); if(!ov) return;
+      ov.style.display = 'flex';
+      document.getElementById('authTitle').textContent = showSetup ? 'Create admin password' : 'Sign in';
+      document.getElementById('setupArea').style.display = showSetup ? 'block' : 'none';
+      document.getElementById('loginArea').style.display = showSetup ? 'none' : 'block';
+      // focus first field
+      setTimeout(()=>{
+        if(showSetup) document.getElementById('setupPass').focus(); else document.getElementById('loginPass').focus();
+      },50);
+    }
+    function hideAuthOverlay(){ const ov = document.getElementById('authOverlay'); if(ov) ov.style.display = 'none'; }
+
+    async function requireAuth(){
+      // If already logged in, show app immediately
+      if(isLoggedIn()){ document.getElementById('logoutBtn').style.display='inline-block'; initApp(); return; }
+      // if no password set, ask to create one
+      if(!isPasswordSet()){ showAuthOverlay(true); }
+      else { showAuthOverlay(false); }
+    }
+
+    // wire auth buttons
+    (function wireAuth(){
+      const setBtn = document.getElementById('setPassBtn');
+      if(setBtn) setBtn.addEventListener('click', async ()=>{
+        const p = document.getElementById('setupPass').value || '';
+        const c = document.getElementById('setupPassConfirm').value || '';
+        if(!p) return alert('Enter a password');
+        if(p !== c) return alert('Passwords do not match');
+        await setAdminPassword(p);
+        alert('Password saved. Please sign in.');
+        document.getElementById('setupPass').value=''; document.getElementById('setupPassConfirm').value='';
+        showAuthOverlay(false);
+      });
+
+      const loginBtn = document.getElementById('loginBtn');
+      if(loginBtn) loginBtn.addEventListener('click', async ()=>{
+        const p = document.getElementById('loginPass').value || '';
+        if(!p) return alert('Enter password');
+        const ok = await checkPassword(p);
+        if(!ok) return alert('Incorrect password');
+        document.getElementById('loginPass').value='';
+        markLoggedIn(); hideAuthOverlay(); initApp();
+      });
+
+      const logoutBtn = document.getElementById('logoutBtn');
+      if(logoutBtn) logoutBtn.addEventListener('click', ()=>{
+        if(!confirm('Sign out?')) return; clearLogin(); // hide app and show login
+        document.getElementById('invoiceApp').style.display='none'; document.getElementById('customersView').style.display='none';
+        showAuthOverlay(false);
+      });
+    })();
+
+    // init app only after authentication
+    function initApp(){
+      // render customers and init rows
+      renderCustomerList();
+      // only add rows to the editor if the editor is open or will be used — keep default 8 rows ready
+      const existingRows = itemsBody.children.length;
+      if(existingRows === 0){ for (let i = 0; i < 8; i++) addRow(); }
+    }
+
+    function addRow(particular = "", qty = "", rate = "") {
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td class="col-sr"></td>
+        <td class="col-particular">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <input type="text" class="particular" value="${particular}" style="flex:1;" />
+          </div>
+        </td>
+        <td class="col-qty">
+          <input type="text" class="qty" value="${qty}">
+        </td>
+        <td class="col-rate">
+          <input type="text" class="rate" value="${rate}">
+        </td>
+        <td class="col-amount">
+          <input type="text" class="amount amount-input" readonly>
+        </td>
+      `;
+      itemsBody.appendChild(tr);
+
+      const particularInput = tr.querySelector('.particular');
+      const qtyInput = tr.querySelector('.qty');
+      const rateInput = tr.querySelector('.rate');
+
+      // Quantity: show blank by default; when a value is provided, format to 3 decimals on blur
+      (function ensureQtyFormat(){
+        const parsed = parseFloat(qty);
+        if(qty !== "" && qty !== null && !isNaN(parsed)){
+          qtyInput.value = parsed.toFixed(3);
+        } else {
+          // leave blank for empty rows
+          qtyInput.value = '';
+        }
+      })();
+
+      // format qty to 3 decimals on blur only when a value exists; empty stays blank
+      qtyInput.addEventListener('blur', ()=>{
+        const raw = qtyInput.value && String(qtyInput.value).trim();
+        if(!raw){
+          qtyInput.value = '';
+        } else {
+          const v = parseFloat(raw);
+          qtyInput.value = isNaN(v) ? '' : v.toFixed(3);
+        }
+        updateTotals();
+      });
+
+      // update numbering only when particulars has content
+      particularInput.addEventListener('input', ()=>{
+        updateRowNumbers();
+      });
+
+      qtyInput.addEventListener("input", updateTotals);
+      rateInput.addEventListener("input", updateTotals);
+
+      // per-row remove button removed: use the global "Delete Row" control instead
+
+      // initial numbering update
+      updateRowNumbers();
+    }
+
+    // Update row numbers: assign sequential numbers only to rows with non-empty particulars
+    function updateRowNumbers(){
+      let n = 1;
+      [...itemsBody.children].forEach(tr=>{
+        const part = tr.querySelector('.particular');
+        const sr = tr.querySelector('.col-sr');
+        if(part && part.value.trim()){
+          sr.textContent = n++; 
+        } else {
+          sr.textContent = '';
+        }
+      });
+    }
+
+    function updateTotals() {
+      let total = 0;
+      [...itemsBody.children].forEach(tr => {
+        const qty = parseFloat(tr.querySelector(".qty").value) || 0;
+        const rate = parseFloat(tr.querySelector(".rate").value) || 0;
+        const amount = qty * rate;
+        tr.querySelector(".amount").value = amount ? amount.toFixed(2) : "";
+        total += amount;
+      });
+      totalAmountDisplay.textContent = total.toFixed(2);
+      totalInWords.textContent = numberToWordsIndian(Math.round(total)) + " Only.";
+    }
+
+    // Simple Indian number system converter (up to crores)
+    function numberToWordsIndian(num) {
+      if (num === 0) return "Zero";
+
+      const a = [
+        "", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine",
+        "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen",
+        "Seventeen", "Eighteen", "Nineteen"
+      ];
+      const b = [
+        "", "", "Twenty", "Thirty", "Forty", "Fifty",
+        "Sixty", "Seventy", "Eighty", "Ninety"
+      ];
+
+      function twoDigits(n) {
+        if (n < 20) return a[n];
+        const tens = Math.floor(n / 10);
+        const ones = n % 10;
+        return b[tens] + (ones ? " " + a[ones] : "");
+      }
+
+      function threeDigits(n) {
+        const hundred = Math.floor(n / 100);
+        const rest = n % 100;
+        let str = "";
+        if (hundred) str += a[hundred] + " Hundred";
+        if (rest) str += (hundred ? " " : "") + twoDigits(rest);
+        return str;
+      }
+
+      let result = "";
+      const crore = Math.floor(num / 10000000);
+      num %= 10000000;
+      const lakh = Math.floor(num / 100000);
+      num %= 100000;
+      const thousand = Math.floor(num / 1000);
+      num %= 1000;
+      const hundred = num;
+
+      if (crore) result += threeDigits(crore) + " Crore ";
+      if (lakh) result += threeDigits(lakh) + " Lakh ";
+      if (thousand) result += threeDigits(thousand) + " Thousand ";
+      if (hundred) result += threeDigits(hundred);
+
+      return result.trim();
+    }
+
+    /* ===== Simple client-side app: customers, invoices (localStorage) ===== */
+
+    function storageGet(key, fallback) {
+      try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch(e){ return fallback; }
+    }
+    function storageSet(key, value){ localStorage.setItem(key, JSON.stringify(value)); }
+
+    // customers: {id, name, address}
+    function getCustomers(){ return storageGet('customers', []); }
+    function saveCustomers(list){ storageSet('customers', list); }
+
+    // invoices: array of invoice objects {id, customerId, invoiceNo, billDate, fromDate, toDate, customerName, shippingAddress, items, total}
+    function getInvoices(){ return storageGet('invoices', []); }
+    function saveInvoices(list){ storageSet('invoices', list); }
+
+    // Invoice number helpers
+    // Preview the next global invoice number without consuming it
+    function peekNextInvoiceNo(){
+      let n = parseInt(localStorage.getItem('nextInvoiceNumber') || '1', 10);
+      return 'INV' + String(n).padStart(4,'0');
+    }
+    // Consume and return the next global invoice number (increments counter)
+    function consumeNextInvoiceNo(){
+      let n = parseInt(localStorage.getItem('nextInvoiceNumber') || '1', 10);
+      localStorage.setItem('nextInvoiceNumber', String(n+1));
+      return 'INV' + String(n).padStart(4,'0');
+    }
+
+    // render customer list
+    function renderCustomerList(){
+      const wrap = document.getElementById('customerList');
+      const customers = getCustomers();
+      if(!wrap) return;
+      wrap.innerHTML = '';
+      // apply search filter if present
+      const searchEl = document.getElementById('customerSearch');
+      const q = searchEl ? (searchEl.value || '').trim().toLowerCase() : '';
+      let filtered = customers;
+      if(q){ filtered = customers.filter(c => (c.name||'').toLowerCase().includes(q) || (c.address||'').toLowerCase().includes(q)); }
+      if(filtered.length === 0){
+        wrap.innerHTML = `
+          <div class="empty-state">
+            <svg class="empty-illustration" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" rx="8" fill="#eef6ff"/><path d="M20 40h24v4H20z" fill="#cfe9ff"/><path d="M24 16h16v12H24z" fill="#fff" stroke="#dbeaf7"/><path d="M32 28v8" stroke="#0b66c3" stroke-width="2" stroke-linecap="round"/></svg>
+            <div style="font-weight:700; margin-top:8px;">No customers yet</div>
+            <div style="margin-top:8px; color:var(--muted);">Add customers to create invoices quickly.</div>
+            <div style="margin-top:12px;"><button class="btn btn-primary" id="emptyAddBtn">Add your first customer</button></div>
+          </div>
+        `;
+        // wire the empty state CTA
+        setTimeout(()=>{
+          const ebtn = document.getElementById('emptyAddBtn'); if(ebtn) ebtn.addEventListener('click', ()=> document.getElementById('addCustomerBtnInline').click());
+        },30);
+        return;
+      }
+      filtered.forEach(c => {
+        const d = document.createElement('div');
+        d.className = 'customer-card';
+        d.style.cursor = 'pointer';
+        // row layout
+        const row = document.createElement('div'); row.className = 'customer-card-row';
+        const avatar = document.createElement('div'); avatar.className = 'customer-avatar';
+        // initials
+        const initials = (c.name || '').split(' ').map(x=>x[0]).join('').slice(0,2).toUpperCase();
+        avatar.textContent = initials || 'C';
+        const meta = document.createElement('div'); meta.className = 'customer-meta';
+        meta.innerHTML = `<div class="name">${escapeHtml(c.name)}</div><div class="addr">${escapeHtml(c.address).replace(/\n/g,'<br>')}</div>`;
+        row.appendChild(avatar); row.appendChild(meta);
+
+        const actions = document.createElement('div'); actions.style.display='flex'; actions.style.gap='8px'; actions.style.marginTop='8px';
+
+        const viewBtn = document.createElement('button'); viewBtn.className='action-btn positive';
+        viewBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h18" stroke="#0b66c3" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Open</span>`;
+
+        const editBtn = document.createElement('button'); editBtn.className='action-btn';
+        editBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 21v-3.6L14.8 5.6l3.6 3.6L6.6 21H3z" stroke="#155" stroke-width="0.8" fill="#eaf6ff"/></svg><span>Edit</span>`;
+
+        const delBtn = document.createElement('button'); delBtn.className='action-btn warn';
+        delBtn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18" stroke="#d33" stroke-width="1.6" stroke-linecap="round"/><path d="M8 6v14a2 2 0 0 0 2 2h4a2 2 0 0 0 2-2V6" stroke="#d33" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Delete</span>`;
+
+        actions.appendChild(viewBtn); actions.appendChild(editBtn); actions.appendChild(delBtn);
+
+        d.appendChild(row); d.appendChild(actions);
+
+        viewBtn.addEventListener('click', ()=> openCustomerPage(c.id));
+        editBtn.addEventListener('click', (ev)=>{
+          ev.stopPropagation();
+          // open modal with existing values for editing
+          const form = document.getElementById('addCustomerForm');
+          document.getElementById('newCustomerName').value = c.name;
+          document.getElementById('newCustomerAddress').value = c.address;
+          form.dataset.editing = c.id;
+          document.getElementById('customerFormOverlay').style.display = 'flex';
+          form.style.display = 'block';
+          document.getElementById('newCustomerName').focus();
+        });
+
+        delBtn.addEventListener('click', (ev)=>{
+          ev.stopPropagation();
+          if(!confirm('Delete this customer and all their invoices?')) return;
+          let customersList = getCustomers(); customersList = customersList.filter(x=>x.id!==c.id); saveCustomers(customersList);
+          // remove invoices for this customer
+          let invoices = getInvoices(); invoices = invoices.filter(inv=> inv.customerId !== c.id); saveInvoices(invoices);
+          renderCustomerList();
+        });
+
+        wrap.appendChild(d);
+      });
+    }
+
+    function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // open customer page: list invoices and create new
+    function openCustomerPage(customerId){
+      const customers = getCustomers();
+      const c = customers.find(x=>x.id===customerId);
+      if(!c) return alert('Customer not found');
+      // hide customers view, show the customer's invoices page (separate view)
+      document.getElementById('customersView').style.display = 'none';
+      // ensure invoice editor is hidden until user chooses to create/open an invoice
+      const invoiceApp = document.getElementById('invoiceApp'); if(invoiceApp) invoiceApp.style.display = 'none';
+      renderCustomerInvoices(customerId);
+      // show the invoices container
+      const cnt = document.getElementById('customerInvoicesContainer'); if(cnt) cnt.style.display = 'block';
+      // store current customer id for later invoice creation
+      localStorage.setItem('currentCustomerId', customerId);
+    }
+
+    function renderCustomerInvoices(customerId){
+      const invoices = getInvoices().filter(inv => inv.customerId === customerId);
+      const containerId = 'customerInvoicesContainer';
+      let container = document.getElementById(containerId);
+      if(!container){
+        container = document.createElement('div');
+        container.id = containerId;
+        container.style.margin = '8px 14px';
+        const btn = document.createElement('button'); btn.type = 'button'; btn.textContent = 'Create New Invoice';
+        btn.style.marginBottom = '8px'; btn.style.cursor = 'pointer'; btn.addEventListener('click', ()=> createNewInvoiceForCustomer(customerId));
+        // Back button to return to customers list
+        const backBtn = document.createElement('button'); backBtn.type = 'button'; backBtn.textContent = 'Back to Customers'; backBtn.style.marginRight = '8px'; backBtn.style.cursor = 'pointer';
+        backBtn.addEventListener('click', ()=>{
+          container.style.display = 'none';
+          document.getElementById('customersView').style.display = 'block';
+        });
+        const topWrap = document.createElement('div'); topWrap.style.marginBottom = '8px';
+        topWrap.appendChild(backBtn); topWrap.appendChild(btn);
+        container.appendChild(topWrap);
+        const list = document.createElement('div'); list.id = containerId + '_list'; list.style.border='1px solid #ddd'; list.style.padding='8px'; list.style.background='#fff'; container.appendChild(list);
+        document.body.insertBefore(container, document.getElementById('invoiceApp'));
+      }
+      // ensure the container is visible when rendering
+      container.style.display = 'block';
+      const listEl = document.getElementById(containerId + '_list');
+      listEl.innerHTML = '';
+      if(invoices.length===0) listEl.innerHTML = '<div style="color:#666">No invoices yet for this customer.</div>';
+      invoices.forEach(inv=>{
+        const el = document.createElement('div'); el.className='invoice-card';
+        const meta = document.createElement('div'); meta.className='meta'; meta.innerHTML = `${inv.invoiceNo} <small>${inv.billDate || ''}</small>`;
+        const right = document.createElement('div'); right.style.display='flex'; right.style.gap='8px'; right.style.alignItems='center';
+        const total = document.createElement('div'); total.style.fontWeight='700'; total.textContent = `₹ ${inv.total || '0.00'}`;
+        const openBtn = document.createElement('button'); openBtn.className='action-btn positive'; openBtn.innerHTML = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 12h18" stroke="#0b66c3" stroke-width="1.6" stroke-linecap="round"/></svg><span>Open</span>`;
+        const delBtn = document.createElement('button'); delBtn.className='action-btn warn'; delBtn.innerHTML = `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h18" stroke="#d33" stroke-width="1.6" stroke-linecap="round"/></svg><span>Delete</span>`;
+        right.appendChild(total); right.appendChild(openBtn); right.appendChild(delBtn);
+        el.appendChild(meta); el.appendChild(right);
+        openBtn.addEventListener('click', ()=> openSavedInvoice(inv.id));
+        delBtn.addEventListener('click', ()=>{
+          if(!confirm('Delete this invoice?')) return;
+          let invoicesAll = getInvoices(); invoicesAll = invoicesAll.filter(x=> x.id !== inv.id); saveInvoices(invoicesAll);
+          renderCustomerInvoices(customerId);
+        });
+        listEl.appendChild(el);
+      });
+    }
+
+    function createNewInvoiceForCustomer(customerId){
+      try{
+        // ensure current customer context is stored
+        if(customerId) localStorage.setItem('currentCustomerId', customerId);
+        const customers = getCustomers();
+        const c = customers.find(x=>String(x.id)===String(customerId));
+        if(!c){ alert('Customer not found'); return; }
+        // prepare invoice editor with customer details
+        const nameEl = document.getElementById('customerName');
+        const addrEl = document.getElementById('shippingAddress');
+        if(nameEl) nameEl.value = c.name || '';
+        if(addrEl) addrEl.value = c.address || '';
+        // show next invoice number as preview (do NOT consume until save)
+        const invoiceNoEl = document.getElementById('invoiceNo'); if(invoiceNoEl) invoiceNoEl.value = peekNextInvoiceNo();
+        currentEditingInvoiceId = null; // creating new
+        const billDateEl = document.getElementById('billDate'); if(billDateEl) billDateEl.value = new Date().toISOString().slice(0,10);
+        // clear items
+        if(itemsBody) itemsBody.innerHTML = '';
+        for(let i=0;i<8;i++) addRow();
+        updateTotals();
+        // hide invoices list and show invoice editor page
+        const cnt = document.getElementById('customerInvoicesContainer'); if(cnt) cnt.style.display = 'none';
+        const app = document.getElementById('invoiceApp'); if(app) app.style.display = 'block';
+      } catch(err){
+        console.error('createNewInvoiceForCustomer error', err);
+        alert('Unable to create invoice. See console for details.');
+      }
+    }
+
+    function openSavedInvoice(invoiceId){
+      const inv = getInvoices().find(x=>x.id===invoiceId);
+      if(!inv) return alert('Invoice not found');
+      // load into editor
+      document.getElementById('customerName').value = inv.customerName;
+      document.getElementById('shippingAddress').value = inv.shippingAddress;
+      document.getElementById('invoiceNo').value = inv.invoiceNo;
+      document.getElementById('billDate').value = inv.billDate || '';
+      document.getElementById('fromDate').value = inv.fromDate || '';
+      document.getElementById('toDate').value = inv.toDate || '';
+      // load items
+      itemsBody.innerHTML = '';
+      (inv.items||[]).forEach(it=> addRow(it.particular, it.qty, it.rate));
+      updateTotals();
+      // set editing context
+      currentEditingInvoiceId = inv.id;
+      if(inv.customerId) localStorage.setItem('currentCustomerId', inv.customerId);
+      // show editor (hide invoices list)
+      const cnt = document.getElementById('customerInvoicesContainer'); if(cnt) cnt.style.display = 'none';
+      document.getElementById('invoiceApp').style.display = 'block';
+    }
+
+    // focus-trap helpers for modal accessibility
+    function enableFocusTrap(container){
+      if(!container) return;
+      // cleanup any existing trap first
+      disableFocusTrap();
+      // remember previously focused element to restore on close
+      window.__fc_restore = document.activeElement;
+      // make container focusable
+      try{ container.tabIndex = -1; }catch(e){}
+      const focusableSelector = 'a[href], area[href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, [tabindex]:not([tabindex="-1"])';
+      const nodes = Array.from(container.querySelectorAll(focusableSelector)).filter(n=> n.offsetParent !== null);
+      const first = nodes[0] || container;
+      const last = nodes[nodes.length - 1] || container;
+
+      const keyHandler = function(e){
+        if(e.key === 'Tab'){
+          if(nodes.length === 0){ e.preventDefault(); return; }
+          if(e.shiftKey){
+            if(document.activeElement === first || document.activeElement === container){
+              e.preventDefault(); last.focus();
+            }
+          } else {
+            if(document.activeElement === last){
+              e.preventDefault(); first.focus();
+            }
+          }
+        }
+      };
+
+      window.__fc_trap = { container, first, last, nodes, keyHandler };
+      document.addEventListener('keydown', keyHandler);
+      // ARIA
+      try{ container.setAttribute('role','dialog'); container.setAttribute('aria-modal','true'); }catch(e){}
+      // move focus into the dialog
+      try{ first.focus(); }catch(e){ container.focus(); }
+    }
+
+    function disableFocusTrap(){
+      const t = window.__fc_trap;
+      if(t){
+        try{ document.removeEventListener('keydown', t.keyHandler); }catch(e){}
+        try{ t.container.removeAttribute('role'); t.container.removeAttribute('aria-modal'); }catch(e){}
+        try{ if(t.container.tabIndex === -1) t.container.removeAttribute('tabindex'); }catch(e){}
+        delete window.__fc_trap;
+      }
+      if(window.__fc_restore){ try{ window.__fc_restore.focus(); }catch(e){} delete window.__fc_restore; }
+    }
+
+    // save customer form handler
+    document.getElementById('saveCustomerBtn').addEventListener('click', ()=>{
+      const name = document.getElementById('newCustomerName').value.trim();
+      const addr = document.getElementById('newCustomerAddress').value.trim();
+      if(!name) return alert('Enter customer name');
+      const customers = getCustomers();
+      const form = document.getElementById('addCustomerForm');
+      if(form && form.dataset.editing){
+        // editing existing customer
+        const id = form.dataset.editing;
+        const idx = customers.findIndex(x=> x.id === id);
+        if(idx >= 0){ customers[idx].name = name; customers[idx].address = addr; saveCustomers(customers); }
+        delete form.dataset.editing;
+      } else {
+        const id = 'c' + Date.now();
+        customers.push({id: id, name: name, address: addr});
+        saveCustomers(customers);
+      }
+      document.getElementById('newCustomerName').value='';
+      document.getElementById('newCustomerAddress').value='';
+      renderCustomerList();
+      // hide overlay/modal after save
+      const overlay = document.getElementById('customerFormOverlay'); if(overlay) overlay.style.display = 'none';
+      if(form) form.style.display = 'none';
+    });
+
+    // close modal button
+    const closeAdd = document.getElementById('closeAddCustomerForm');
+    if(closeAdd){ closeAdd.addEventListener('click', ()=>{ const overlay = document.getElementById('customerFormOverlay'); if(overlay) overlay.style.display='none'; const form = document.getElementById('addCustomerForm'); if(form) form.style.display='none'; disableFocusTrap(); }); }
+
+    // close overlay when clicking outside the modal
+    const overlay = document.getElementById('customerFormOverlay');
+    if(overlay){
+      overlay.addEventListener('click', (ev)=>{
+        if(ev.target === overlay){ overlay.style.display = 'none'; const form = document.getElementById('addCustomerForm'); if(form) form.style.display='none'; disableFocusTrap(); }
+      });
+    }
+
+    // close modal with Escape key
+    document.addEventListener('keydown', (ev)=>{
+      if(ev.key === 'Escape'){
+        const overlay = document.getElementById('customerFormOverlay'); if(overlay && overlay.style.display === 'flex'){ overlay.style.display='none'; const form = document.getElementById('addCustomerForm'); if(form) form.style.display='none'; disableFocusTrap(); }
+      }
+    });
+
+    // Add Customer button: show the form when clicked
+    const addBtn = document.getElementById('addCustomerBtn');
+    if(addBtn){
+      addBtn.addEventListener('click', ()=>{
+        const overlay = document.getElementById('customerFormOverlay');
+        const form = document.getElementById('addCustomerForm');
+        if(overlay) overlay.style.display = 'flex';
+        if(form){ form.style.display = 'block'; document.getElementById('newCustomerName').focus(); enableFocusTrap(form); }
+      });
+    }
+
+    // Inline Add button (top) wiring
+    const addBtnInline = document.getElementById('addCustomerBtnInline');
+    if(addBtnInline){
+      addBtnInline.addEventListener('click', ()=>{
+        const overlay = document.getElementById('customerFormOverlay');
+        const form = document.getElementById('addCustomerForm');
+        // clear any editing state and open modal
+        if(form && form.dataset.editing) delete form.dataset.editing;
+        if(overlay) overlay.style.display = 'flex';
+        if(form){ form.style.display = 'block'; document.getElementById('newCustomerName').focus(); enableFocusTrap(form); }
+      });
+    }
+
+    // Quick New Invoice button in header
+    const quickInv = document.getElementById('newInvoiceQuick');
+    if(quickInv){ quickInv.addEventListener('click', ()=>{
+      // if a customer is selected, open new invoice for that customer, otherwise open invoice app with empty fields
+      const cur = localStorage.getItem('currentCustomerId');
+      if(cur){ createNewInvoiceForCustomer(cur); }
+      else { document.getElementById('customersView').style.display = 'none'; document.getElementById('invoiceApp').style.display = 'block'; itemsBody.innerHTML=''; for(let i=0;i<8;i++) addRow(); updateTotals(); document.getElementById('invoiceNo').value = peekNextInvoiceNo(); }
+    }); }
+
+    // Wire customer search to re-render the list as user types
+    const customerSearch = document.getElementById('customerSearch');
+    if(customerSearch){
+      customerSearch.addEventListener('input', ()=> renderCustomerList());
+    }
+
+    // Back button in invoice editor: go back to customer's invoice list when clicked
+    const backInv = document.getElementById('backToInvoicesBtn');
+    if(backInv){
+      backInv.addEventListener('click', ()=>{
+        // hide editor
+        document.getElementById('invoiceApp').style.display = 'none';
+        // show customer's invoice list if available
+        const cur = localStorage.getItem('currentCustomerId');
+        if(cur){ renderCustomerInvoices(cur); const cnt = document.getElementById('customerInvoicesContainer'); if(cnt) cnt.style.display = 'block'; }
+        else { document.getElementById('customersView').style.display = 'block'; }
+      });
+    }
+
+    // wire print button to window.print (keeps behavior centralized)
+    const printBtn = document.getElementById('printBtn');
+    if(printBtn){ printBtn.addEventListener('click', ()=> window.print()); }
+
+    // Add Row and Delete Row buttons wiring
+    const addRowBtn = document.getElementById('addRowBtn');
+    if(addRowBtn) addRowBtn.addEventListener('click', ()=> addRow());
+
+    const deleteRowBtn = document.getElementById('deleteRowBtn');
+    if(deleteRowBtn){
+      deleteRowBtn.addEventListener('click', ()=>{
+        const rows = itemsBody.children;
+        if(rows.length === 0) return;
+        // remove the last row in the table
+        rows[rows.length - 1].remove();
+        updateTotals();
+        updateRowNumbers();
+      });
+    }
+
+    // Save invoice button (add a save button to controls if not present)
+    function ensureSaveInvoiceButton(){
+      let btn = document.getElementById('saveInvoiceBtn');
+      if(!btn){
+        btn = document.createElement('button'); btn.id = 'saveInvoiceBtn'; btn.textContent = 'Save Invoice';
+        btn.style.marginLeft = '6px';
+        const controls = document.querySelector('.controls');
+        if(controls) controls.appendChild(btn);
+        btn.addEventListener('click', ()=>{
+          const customerId = localStorage.getItem('currentCustomerId') || null;
+          const isNew = !currentEditingInvoiceId;
+          // If creating a new invoice, consume a global invoice number now to guarantee uniqueness
+          let assignedInvoiceNo = document.getElementById('invoiceNo').value;
+          if(isNew){ assignedInvoiceNo = consumeNextInvoiceNo(); document.getElementById('invoiceNo').value = assignedInvoiceNo; }
+          const invObj = {
+            id: currentEditingInvoiceId || ('inv' + Date.now()),
+            customerId: customerId,
+            invoiceNo: assignedInvoiceNo,
+            billDate: document.getElementById('billDate').value,
+            fromDate: document.getElementById('fromDate').value,
+            toDate: document.getElementById('toDate').value,
+            customerName: document.getElementById('customerName').value,
+            shippingAddress: document.getElementById('shippingAddress').value,
+            items: [...itemsBody.children].map(tr=>({
+              particular: tr.querySelector('.particular').value || '',
+              qty: tr.querySelector('.qty').value || '',
+              rate: tr.querySelector('.rate').value || ''
+            })),
+            total: document.getElementById('totalAmountDisplay').textContent
+          };
+          let invoices = getInvoices();
+          if(currentEditingInvoiceId){
+            // update existing
+            const idx = invoices.findIndex(x=> x.id === currentEditingInvoiceId);
+            if(idx >= 0){ invoices[idx] = invObj; }
+          } else {
+            invoices.push(invObj);
+          }
+          saveInvoices(invoices);
+          alert('Invoice saved');
+          // clear editing context
+          currentEditingInvoiceId = null;
+          // go back to the customer's invoice list and refresh it
+          document.getElementById('invoiceApp').style.display = 'none';
+          const curCust = localStorage.getItem('currentCustomerId');
+          if(curCust){
+            renderCustomerInvoices(curCust);
+            const cnt = document.getElementById('customerInvoicesContainer'); if(cnt) cnt.style.display = 'block';
+          } else {
+            // fallback to customers view
+            document.getElementById('customersView').style.display = 'block';
+            renderCustomerList();
+          }
+        });
+      }
+    }
+
+    ensureSaveInvoiceButton();
+    // require authentication before initializing the app
+    requireAuth();
+
+    // One-time: set admin password to user-requested value if not already set by this helper
+    (async function applyRequestedPassword(){
+      try{
+        if(localStorage.getItem('pwSetByAgent') !== '1'){
+          // WARNING: this will overwrite any existing admin password. Intended by user request.
+          await setAdminPassword('ssfs@invoice123');
+          localStorage.setItem('pwSetByAgent','1');
+          console.info('Admin password set by helper (one-time).');
+          alert('Admin password changed to the requested value.');
+        }
+      }catch(e){ console.error('Failed to set admin password programmatically', e); }
+    })();
+  </script>
+</body>
+</html>
+
